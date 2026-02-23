@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="QUAZA - Simulador bancario com operacoes em tempo real." />
+  <title>QUAZA | Simulador Bancario</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Syne:wght@500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="scene-glow scene-glow-left" aria-hidden="true"></div>
+  <div class="scene-glow scene-glow-right" aria-hidden="true"></div>
+
+  <main class="app-shell">
+    <header class="topbar panel">
+      <div class="brand-wrap">
+        <img src="logos/Logo Moderno da QUAZA.png" alt="Logo do sistema QUAZA" class="brand-logo" />
+        <div>
+          <p class="eyebrow">Simulador Bancario Inteligente</p>
+          <h1>QUAZA</h1>
+        </div>
+      </div>
+      <div class="clock-card">
+        <span>Data e horario</span>
+        <strong id="clockDate">--</strong>
+      </div>
+    </header>
+
+    <section class="dashboard-grid">
+      <article class="panel auth-panel">
+        <h2>Conta simulada</h2>
+        <p class="muted">Crie ou reset sua conta de teste para experimentar as mecanicas do sistema.</p>
+
+        <div class="stack-fields">
+          <label for="userName">Nome do cliente</label>
+          <input id="userName" type="text" value="Cliente QUAZA" />
+
+          <label for="userPlan">Plano</label>
+          <select id="userPlan">
+            <option value="free">Free</option>
+            <option value="pro" selected>Pro</option>
+            <option value="premium">Premium</option>
+          </select>
+
+          <label for="accountPin">PIN da conta</label>
+          <input id="accountPin" type="password" maxlength="12" value="1234" />
+          <button id="createAccountBtn" class="btn secondary" type="button">Criar nova conta</button>
+        </div>
+
+        <hr />
+
+        <div class="stack-fields">
+          <label for="loginPin">PIN para login</label>
+          <input id="loginPin" type="password" maxlength="12" placeholder="Digite seu PIN" />
+          <div class="inline-actions">
+            <button id="loginBtn" class="btn" type="button">Abrir cofre</button>
+            <button id="logoutBtn" class="btn ghost" type="button" data-lock>Sair</button>
+          </div>
+        </div>
+
+        <p id="authStatus" class="status info">Configure sua conta e faca login para liberar operacoes.</p>
+        <small id="attemptStatus" class="attempts">Tentativas restantes: 3</small>
+      </article>
+
+      <article class="panel overview-panel">
+        <h2>Visao geral</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span>Saldo disponivel</span>
+            <strong id="balanceValue">R$ 0,00</strong>
+          </div>
+          <div class="stat-card">
+            <span>Reserva da meta</span>
+            <strong id="savedValue">R$ 0,00</strong>
+          </div>
+          <div class="stat-card">
+            <span>Plano ativo</span>
+            <strong id="planValue">--</strong>
+          </div>
+          <div class="stat-card">
+            <span>Operacoes restantes</span>
+            <strong id="opsLeftValue">--</strong>
+          </div>
+        </div>
+
+        <div class="goal-box">
+          <label for="goalAmount">Meta financeira</label>
+          <div class="goal-actions">
+            <input id="goalAmount" type="number" step="0.01" min="1" value="2500" data-lock />
+            <button id="setGoalBtn" type="button" class="btn mini" data-lock>Atualizar meta</button>
+          </div>
+          <div class="goal-progress" role="progressbar" aria-label="Progresso da meta" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <span id="goalProgressBar"></span>
+          </div>
+          <small id="goalProgressText">0% da meta atingida</small>
+        </div>
+
+        <div class="perk-box">
+          <p id="perkText">Vantagem do plano: sem bonus ativo.</p>
+          <button id="claimBonusBtn" class="btn mini accent" type="button" data-lock>Resgatar bonus diario +R$ 25</button>
+          <small id="bonusStatus">Bonus diario disponivel apos login.</small>
+        </div>
+      </article>
+
+      <article class="panel operations-panel" id="operationsPanel">
+        <div class="panel-head">
+          <h2>Operacoes</h2>
+          <small>Deposito, saque, transferencia e reserva de meta</small>
+        </div>
+
+        <div class="operations-grid requires-auth">
+          <form id="depositForm" class="op-form">
+            <h3>Depositar</h3>
+            <label for="depositAmount">Valor</label>
+            <input id="depositAmount" type="number" step="0.01" min="0.01" placeholder="0.00" data-lock />
+            <button class="btn" type="submit" data-lock>Confirmar deposito</button>
+          </form>
+
+          <form id="withdrawForm" class="op-form">
+            <h3>Sacar</h3>
+            <label for="withdrawAmount">Valor</label>
+            <input id="withdrawAmount" type="number" step="0.01" min="0.01" placeholder="0.00" data-lock />
+            <button class="btn" type="submit" data-lock>Confirmar saque</button>
+          </form>
+
+          <form id="transferForm" class="op-form">
+            <h3>Transferir</h3>
+            <label for="transferTarget">Destino</label>
+            <input id="transferTarget" type="text" placeholder="Nome do favorecido" data-lock />
+            <label for="transferAmount">Valor</label>
+            <input id="transferAmount" type="number" step="0.01" min="0.01" placeholder="0.00" data-lock />
+            <button class="btn" type="submit" data-lock>Enviar transferencia</button>
+          </form>
+
+          <form id="reserveForm" class="op-form">
+            <h3>Reservar para meta</h3>
+            <label for="reserveAmount">Valor</label>
+            <input id="reserveAmount" type="number" step="0.01" min="0.01" placeholder="0.00" data-lock />
+            <button class="btn" type="submit" data-lock>Reservar valor</button>
+          </form>
+        </div>
+
+        <p id="actionStatus" class="status info">Aguardando operacao.</p>
+      </article>
+
+      <article class="panel statement-panel">
+        <div class="panel-head statement-head">
+          <h2>Extrato em tempo real</h2>
+          <button id="clearStatementBtn" class="text-btn" type="button">Limpar extrato</button>
+        </div>
+        <ul id="statementList" class="statement-list">
+          <li class="empty-state">Nenhuma movimentacao registrada.</li>
+        </ul>
+      </article>
+    </section>
+  </main>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
